@@ -18,10 +18,7 @@ import java.net.UnknownHostException;
 import java.net.MalformedURLException;
 import javax.ws.rs.ProcessingException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import javax.inject.Inject;
 import javax.enterprise.context.ApplicationScoped;
 
@@ -74,7 +71,7 @@ public class InventoryManager {
               .baseUrl(new URL("https://api.iextrading.com/1.0"))
               .build(MyClient.class);
       System.err.println("calling API...");
-      final List<ChartEntry> chart = myClient.getChart("AAPL", "20190205");
+      final List<ChartEntry> chart = Arrays.asList(myClient.getChart("AAPL", "20190205"));
       System.err.println("size = " + chart.size());
       chart.forEach(e -> System.err.println(String.format("%s %s %s", e.getDate(), e.getMinute(), e.getClose())));
 
