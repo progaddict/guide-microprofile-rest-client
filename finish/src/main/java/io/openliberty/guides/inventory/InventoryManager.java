@@ -24,14 +24,13 @@ import java.util.List;
 import java.util.Properties;
 import javax.inject.Inject;
 import javax.enterprise.context.ApplicationScoped;
+
+import io.openliberty.guides.inventory.client.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import io.openliberty.guides.inventory.model.InventoryList;
 import io.openliberty.guides.inventory.model.SystemData;
-import io.openliberty.guides.inventory.client.SystemClient;
-import io.openliberty.guides.inventory.client.UnknownUrlException;
-import io.openliberty.guides.inventory.client.UnknownUrlExceptionMapper;
 
 @ApplicationScoped
 public class InventoryManager {
@@ -70,11 +69,22 @@ public class InventoryManager {
 
   private Properties getPropertiesWithDefaultHostName() {
     try {
+
+      final MyClient myClient = RestClientBuilder.newBuilder()
+              .baseUrl(new URL("https://api.iextrading.com/1.0"))
+              .build(MyClient.class);
+      System.err.println("calling API...");
+      final List<ChartEntry> chart = myClient.getChart("AAPL", "20190205");
+      System.err.println("size = " + chart.size());
+      chart.forEach(e -> System.err.println(String.format("%s %s %s", e.getDate(), e.getMinute(), e.getClose())));
+
       return defaultRestClient.getProperties();
     } catch (UnknownUrlException e) {
       System.err.println("The given URL is unreachable.");
     } catch (ProcessingException ex) {
       handleProcessingException(ex);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
     }
     return null;
   }
